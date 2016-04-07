@@ -1,74 +1,88 @@
 #include "CameraManager.h"
 
-ReEng::CameraManager & ReEng::CameraManager::operator=(CameraManager const & other)
+using namespace ReEng;
+
+CameraManager * CameraManager::m_pInstance = nullptr;
+CameraManager & CameraManager::operator=(CameraManager const & other)
 {
 	return *this;
 }
 
-ReEng::CameraManager::~CameraManager(void)
+CameraManager::~CameraManager(void){}
+
+void CameraManager::Release(void)
 {
 }
 
-void ReEng::CameraManager::Release(void)
+void CameraManager::Init(void)
 {
 }
 
-void ReEng::CameraManager::Init(void)
+CameraManager * CameraManager::GetInstance()
 {
+	if (m_pInstance == nullptr)
+	{
+		m_pInstance = new CameraManager();
+	}
+	return m_pInstance;
 }
 
-ReEng::CameraManager * ReEng::CameraManager::GetInstance()
+void CameraManager::ReleaseInstance(void)
 {
-	return nullptr;
+	if (m_pInstance != nullptr)
+	{
+		delete m_pInstance;
+		m_pInstance = nullptr;
+	}
+	
 }
 
-void ReEng::CameraManager::ReleaseInstance(void)
-{
-}
-
-ReEng::matrix4 ReEng::CameraManager::GetView(void)
+matrix4 CameraManager::GetView(void)
 {
 	matrix4 view = glm::lookAt(m_v3Position, m_v3Target, m_v3Top);
 	return view;
 }
 
-ReEng::matrix4 ReEng::CameraManager::GetProjection(bool bOrthographic)
+matrix4 CameraManager::GetProjection(bool bOrthographic)
 {
 	return matrix4();
 }
 
-void ReEng::CameraManager::SetPosition(vector3 v3Position)
+void CameraManager::SetPosition(vector3 v3Position)
+{
+	m_v3Position = v3Position;
+}
+
+void CameraManager::SetTarget(vector3 v3Target)
+{
+	m_v3Target = v3Target;
+}
+
+void CameraManager::SetUp(vector3 v3Up)
+{
+	m_v3Upward = v3Up;
+}
+
+void CameraManager::MoveForward(float fIncrement)
 {
 }
 
-void ReEng::CameraManager::SetTarget(vector3 v3Target)
+void CameraManager::MoveSideways(float fIncrement)
 {
 }
 
-void ReEng::CameraManager::SetUp(vector3 v3Up)
+void CameraManager::MoveVertical(float fIncrement)
 {
 }
 
-void ReEng::CameraManager::MoveForward(float fIncrement)
+void CameraManager::ChangePitch(float fIncrement)
 {
 }
 
-void ReEng::CameraManager::MoveSideways(float fIncrement)
+void CameraManager::ChangeRoll(float fIncrement)
 {
 }
 
-void ReEng::CameraManager::MoveVertical(float fIncrement)
-{
-}
-
-void ReEng::CameraManager::ChangePitch(float fIncrement)
-{
-}
-
-void ReEng::CameraManager::ChangeRoll(float fIncrement)
-{
-}
-
-void ReEng::CameraManager::ChangeYaw(float fIncrement)
+void CameraManager::ChangeYaw(float fIncrement)
 {
 }
