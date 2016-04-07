@@ -3,18 +3,11 @@
 using namespace ReEng;
 
 CameraManager * CameraManager::m_pInstance = nullptr;
-CameraManager & CameraManager::operator=(CameraManager const & other)
+void CameraManager::Init(void)
 {
-	return *this;
 }
-
-CameraManager::~CameraManager(void){}
 
 void CameraManager::Release(void)
-{
-}
-
-void CameraManager::Init(void)
 {
 }
 
@@ -37,15 +30,25 @@ void CameraManager::ReleaseInstance(void)
 	
 }
 
+CameraManager::CameraManager(void) { Init(); }
+CameraManager::CameraManager(CameraManager const & other){}
+CameraManager & CameraManager::operator=(CameraManager const & other) { return *this; }
+CameraManager::~CameraManager(void) { Release(); }
+
 matrix4 CameraManager::GetView(void)
 {
-	matrix4 view = glm::lookAt(m_v3Position, m_v3Target, m_v3Top);
-	return view;
+	m_m4View = glm::lookAt(m_v3Position, m_v3Target, m_v3Top);
+	return m_m4View;
 }
 
 matrix4 CameraManager::GetProjection(bool bOrthographic)
 {
-	return matrix4();
+	if (bOrthographic)
+	{
+		m_m4Projection = glm::ortho();
+	}
+
+	return m_m4Projection;
 }
 
 void CameraManager::SetPosition(vector3 v3Position)
@@ -79,10 +82,12 @@ void CameraManager::ChangePitch(float fIncrement)
 {
 }
 
+void CameraManager::ChangeYaw(float fIncrement)
+{
+}
+
 void CameraManager::ChangeRoll(float fIncrement)
 {
 }
 
-void CameraManager::ChangeYaw(float fIncrement)
-{
-}
+

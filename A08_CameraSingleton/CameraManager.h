@@ -13,6 +13,13 @@ namespace ReEng
 		static CameraManager* m_pInstance;
 		std::vector<int> m_lData;
 
+		CameraManager(void);
+		CameraManager(CameraManager const& other);
+		CameraManager& operator=(CameraManager const& other);
+		~CameraManager(void);
+		void Release(void);
+		void Init(void);
+
 		bool m_bFPS = true; 
 
 		CAMERAMODE m_nMode = CAMERAMODE::CAMPERSP;
@@ -34,12 +41,6 @@ namespace ReEng
 		matrix4 m_m4Projection = matrix4(1.0f);
 		matrix4 m_m4View = matrix4(1.0f);
 
-		CameraManager(void);
-		CameraManager(CameraManager const& other);
-		CameraManager& operator=(CameraManager const& other);
-		~CameraManager(void);
-		void Release(void);
-		void Init(void);
 	public:
 		static CameraManager* GetInstance();
 
