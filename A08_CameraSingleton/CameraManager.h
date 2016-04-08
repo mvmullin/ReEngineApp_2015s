@@ -10,7 +10,7 @@ namespace ReEng
 	class ReEngDLL CameraManager
 	{
 		int m_nData = 0;
-		static CameraManager* m_pInstance;
+		static CameraManager* m_pCameraInstance;
 		std::vector<int> m_lData;
 
 		CameraManager(void);
