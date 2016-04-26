@@ -25,6 +25,8 @@ class MyBOClass
 	vector3 m_v3HalfWidth = vector3(0.0f);//Will store half the size of all sides
 	vector3 m_v3HalfWidthG = vector3(0.0f);//Will store half the size of all sides
 
+	vector3 localAxes[3] = { vector3(1, 0, 0), vector3(0, 1, 0), vector3(0, 0, 1) }; //Should store the local axes of the bounding object
+
 	matrix4 m_m4ToWorld = IDENTITY_M4; //Matrix that will take us from local to world coordinate
 public:
 	/*

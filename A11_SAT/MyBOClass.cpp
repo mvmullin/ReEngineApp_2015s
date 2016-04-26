@@ -235,5 +235,91 @@ bool MyBOClass::IsColliding(MyBOClass* const a_pOther)
 	if (m_v3MinG.z > a_pOther->m_v3MaxG.z)
 		bColliding = false;
 
+	//If bColliding is true check with SAT
+	if (bColliding)
+	{
+		float ra, rb;
+		glm::mat3 R, AbsR;
+
+		// Compute rotation matrix expressing b in a’s coordinate frame
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				R[i][j] = glm::dot(localAxes[i], a_pOther->localAxes[j]);
+
+		// Compute translation vector t
+		glm::vec3 t = a_pOther->m_v3CenterG - m_v3CenterG;
+
+		// Bring translation into a’s coordinate frame
+		t = glm::vec3(glm::dot(t, localAxes[0]), glm::dot(t, localAxes[1]), glm::dot(t, localAxes[2]));
+
+		// Compute common subexpressions. Add in an epsilon term to
+		// counteract arithmetic errors when two edges are parallel and
+		// their cross product is (near) null (see text for details)
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				AbsR[i][j] = abs(R[i][j]) + .001;
+
+		// Test axes L = A0, L = A1, L = A2
+		for (int i = 0; i < 3; i++) {
+			ra = m_v3HalfWidthG[i];
+			rb = a_pOther->m_v3HalfWidthG[0] * AbsR[i][0] + a_pOther->m_v3HalfWidthG[1] * AbsR[i][1] + a_pOther->m_v3HalfWidthG[2] * AbsR[i][2];
+			if (abs(t[i]) > ra + rb) return 0;
+		}
+
+		// Test axes L = B0, L = B1, L = B2
+		for (int i = 0; i < 3; i++) {
+			ra = m_v3HalfWidthG[0] * AbsR[0][i] + m_v3HalfWidthG[1] * AbsR[1][i] + m_v3HalfWidthG[2] * AbsR[2][i];
+			rb = a_pOther->m_v3HalfWidthG[i];
+			if (abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb) return 0;
+		}
+
+		// Test axis L = A0 x B0
+		ra = m_v3HalfWidthG[1] * AbsR[2][0] + m_v3HalfWidthG[2] * AbsR[1][0];
+		rb = a_pOther->m_v3HalfWidthG[1] * AbsR[0][2] + a_pOther->m_v3HalfWidthG[2] * AbsR[0][1];
+		if (abs(t[2] * R[1][0] - t[1] * R[2][0]) > ra + rb) return 0;
+
+		// Test axis L = A0 x B1
+		ra = m_v3HalfWidthG[1] * AbsR[2][1] + m_v3HalfWidthG[2] * AbsR[1][1];
+		rb = a_pOther->m_v3HalfWidthG[0] * AbsR[0][2] + a_pOther->m_v3HalfWidthG[2] * AbsR[0][0];
+		if (abs(t[2] * R[1][1] - t[1] * R[2][1]) > ra + rb) return 0;
+
+		// Test axis L = A0 x B2
+		ra = m_v3HalfWidthG[1] * AbsR[2][2] + m_v3HalfWidthG[2] * AbsR[1][2];
+		rb = a_pOther->m_v3HalfWidthG[0] * AbsR[0][1] + a_pOther->m_v3HalfWidthG[1] * AbsR[0][0];
+		if (abs(t[2] * R[1][2] - t[1] * R[2][2]) > ra + rb) return 0;
+
+		// Test axis L = A1 x B0
+		ra = m_v3HalfWidthG[0] * AbsR[2][0] + m_v3HalfWidthG[2] * AbsR[0][0];
+		rb = a_pOther->m_v3HalfWidthG[1] * AbsR[1][2] + a_pOther->m_v3HalfWidthG[2] * AbsR[1][1];
+		if (abs(t[0] * R[2][0] - t[2] * R[0][0]) > ra + rb) return 0;
+
+		// Test axis L = A1 x B1
+		ra = m_v3HalfWidthG[0] * AbsR[2][1] + m_v3HalfWidthG[2] * AbsR[0][1];
+		rb = a_pOther->m_v3HalfWidthG[0] * AbsR[1][2] + a_pOther->m_v3HalfWidthG[2] * AbsR[1][0];
+		if (abs(t[0] * R[2][1] - t[2] * R[0][1]) > ra + rb) return 0;
+
+		// Test axis L = A1 x B2
+		ra = m_v3HalfWidthG[0] * AbsR[2][2] + m_v3HalfWidthG[2] * AbsR[0][2];
+		rb = a_pOther->m_v3HalfWidthG[0] * AbsR[1][1] + a_pOther->m_v3HalfWidthG[1] * AbsR[1][0];
+		if (abs(t[0] * R[2][2] - t[2] * R[0][2]) > ra + rb) return 0;
+
+		// Test axis L = A2 x B0
+		ra = m_v3HalfWidthG[0] * AbsR[1][0] + m_v3HalfWidthG[1] * AbsR[0][0];
+		rb = a_pOther->m_v3HalfWidthG[1] * AbsR[2][2] + a_pOther->m_v3HalfWidthG[2] * AbsR[2][1];
+		if (abs(t[1] * R[0][0] - t[0] * R[1][0]) > ra + rb) return 0;
+
+		// Test axis L = A2 x B1
+		ra = m_v3HalfWidthG[0] * AbsR[1][1] + m_v3HalfWidthG[1] * AbsR[0][1];
+		rb = a_pOther->m_v3HalfWidthG[0] * AbsR[2][2] + a_pOther->m_v3HalfWidthG[2] * AbsR[2][0];
+		if (abs(t[1] * R[0][1] - t[0] * R[1][1]) > ra + rb) return 0;
+
+		// Test axis L = A2 x B2
+		ra = m_v3HalfWidthG[0] * AbsR[1][2] + m_v3HalfWidthG[1] * AbsR[0][2];
+		rb = a_pOther->m_v3HalfWidthG[0] * AbsR[2][1] + a_pOther->m_v3HalfWidthG[1] * AbsR[2][0];
+		if (abs(t[1] * R[0][2] - t[0] * R[1][2]) > ra + rb) return 0;
+
+		//If no tests succeed, they are intersecting
+		bColliding = true;
+
 	return bColliding;
 }
