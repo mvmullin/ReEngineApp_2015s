@@ -45,6 +45,7 @@ void AppClass::InitVariables(void)
 	m_pBoxT->SetModelMatrix(glm::translate(vector3(0, 5, 0)));
 	m_pBoxB->SetModelMatrix(glm::translate(vector3(0, -5, 0)));
 	m_pBoxR->SetModelMatrix(glm::translate(vector3(10.5, 0, 0)));
+	m_pBoxL->SetModelMatrix(glm::translate(vector3(-10.5, 0, 0)));
 }
 
 void AppClass::Update(void)
