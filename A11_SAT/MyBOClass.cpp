@@ -321,5 +321,6 @@ bool MyBOClass::IsColliding(MyBOClass* const a_pOther)
 		//If no tests succeed, they are intersecting
 		bColliding = true;
 
-	return bColliding;
+		return bColliding;
+	}
 }
