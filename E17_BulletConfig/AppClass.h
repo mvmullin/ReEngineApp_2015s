@@ -8,10 +8,29 @@ Date: 2015/09 (Last Modified on: 15/11)
 #include "RE\ReEngAppClass.h"
 #include <SFML\Graphics.hpp>
 
+#include "Bullet\btBulletCollisionCommon.h"
+#include "Bullet\btBulletDynamicsCommon.h"
+
 using namespace ReEng; //Using ReEng namespace to use all the classes in the dll
 
 class AppClass : public ReEngAppClass
 {
+	int m_nCubes;
+
+	btBroadphaseInterface* broadphase;
+	btDefaultCollisionConfiguration* collisionConfiguration;
+	btCollisionDispatcher* dispatcher;
+	btSequentialImpulseConstraintSolver* solver;
+
+	btDiscreteDynamicsWorld* dynamicsWorld;
+	btCollisionShape* groundShape;
+	btCollisionShape* fallShape;
+	btDefaultMotionState* groundMotionState;
+	btRigidBody* groundRigidBody;
+
+	std::vector<btDefaultMotionState*> fallMotionState;
+	std::vector<btRigidBody*> fallRigidBody;
+
 public:
 	typedef ReEngAppClass super;
 
@@ -25,12 +44,6 @@ public:
 	OUTPUT: ---
 	*/
 	AppClass(HINSTANCE hInstance, LPWSTR lpCmdLine, int nCmdShow, bool a_bUsingConsole = false) : super(hInstance, lpCmdLine, nCmdShow, a_bUsingConsole) {}
-	/*
-	USAGE: Destructor
-	ARGUMENTS: ---
-	OUTPUT: ---
-	*/
-	~AppClass(void) { Release(); }
 	/*
 	USAGE: Reads the configuration of the application to a file
 	ARGUMENTS: ---
